@@ -6,6 +6,7 @@ import os
 import shutil
 import tkinter as tk
 from tkinter import ttk
+from tkinter import filedialog
 import re
 import send2trash
 
@@ -34,6 +35,7 @@ def Downloader(ID):
     progressbar.grid(row=3, column=4, pady=10, padx=10)
     size = int(response.headers.get('content-length', 0))
     state = "Downloading"
+    
     with open("game.pkg", 'wb') as f:
         for chunk in response.iter_content(chunk_size=1024*1024):
             # Write the chunk to the file
@@ -149,45 +151,57 @@ def update():
     # Schedule the next update
     root.after(1000, update)  # Update every 1000 ms
 
+def select_folder():
+    folder_selected = filedialog.askdirectory()
+    return folder_selected
+
 
 def setWindowProperties(window):
+   
     window.title("PSP Games Downloader")
     window.geometry("840x460+400+200")
     window.resizable(width=False, height=False)
     window.iconbitmap("psp.ico")
     
+    pathText = tk.Text(window, height=1, width=50)
+    pathText.grid(row=0, column=0, columnspan=2, sticky="w", padx=10, pady=10)
+    path = select_folder()
+    pathText.insert(tk.END, path)
+    pathText.config(state="disabled")
+
     labelUrl = tk.Label(window, text="Zadajte meno suboru: ")
-    labelUrl.grid(row=0, column=0, sticky="w", padx=10, pady=10)
+    labelUrl.grid(row=1, column=0, sticky="w", padx=10, pady=10)
     
     outputList = tk.Listbox(window, width=0, height=20 )
-    outputList.grid(row=3, column=0, columnspan=2, padx=10)
+    outputList.grid(row=4, column=0, columnspan=2, padx=10)
     outputList.bind("<Return>", lambda event: Downloader(outputList.get(tk.ACTIVE).split(" ")[0].replace(":","")))
 
     entryUrl = tk.Entry(window)
-    entryUrl.grid(row=0, column=1, sticky="w", pady=10, ipadx=100)
+    entryUrl.grid(row=1, column=1, sticky="w", pady=10, ipadx=100)
     entryUrl.insert(0, "important_files/EU_PSP_games_sort_by_Name.tsv")
 
     labelgame = tk.Label(window, text="Zadajte meno Hry: ")
-    labelgame.grid(row=2, column=0, sticky="w", padx=10, pady=10)
+    labelgame.grid(row=3, column=0, sticky="w", padx=10, pady=10)
 
     entrygame = tk.Entry(window)
     entrygame.bind("<Return>", lambda event: Database_finder(entrygame.get(), outputList), outputList.focus_set() )
-    entrygame.grid(row=2, column=1, sticky="w", pady=10, ipadx=100)
+    entrygame.grid(row=3, column=1, sticky="w", pady=10, ipadx=100)
     #entrygame.insert(0, "God of War")
-
+    
     button = tk.Button(window, text="Build Database", command=lambda: build_databaze(entryUrl.get()))
-    button.grid(row=0, column=2, columnspan=2, pady=10, padx=10)
+    button.grid(row=1, column=2, columnspan=2, pady=10, padx=10)
 
     find = tk.Button(window, text="Find", command=lambda: Database_finder(entrygame.get(), outputList))
-    find.grid(row=2, column=2, columnspan=2, pady=10, padx=10)
+    find.grid(row=3, column=2, columnspan=2, pady=10, padx=10)
 
     dowload = tk.Button(window, text="Download", command=lambda: Downloader(outputList.get(tk.ACTIVE).split(" ")[0].replace(":","")))
-    dowload.grid(row=3, column=2, columnspan=2, pady=10, padx=10)
+    dowload.grid(row=4, column=2, columnspan=2, pady=10, padx=10)
 
     DropDatabase = tk.Button(window, text="Drop Database", command=lambda: drop_database())
-    DropDatabase.grid(row=0, column=4, pady=10, padx=10)
+    DropDatabase.grid(row=1, column=4, pady=10, padx=10)
 
     return True
+
 
 
 root = tk.Tk()
@@ -199,7 +213,7 @@ labelState.set(f"Stav: {table_exists()}")
 
 # Associate the StringVar with the label
 label = tk.Label(root, textvariable=labelState)
-label.grid(row=0, column=5, sticky="w", padx=10, pady=10)
+label.grid(row=1, column=5, sticky="w", padx=10, pady=10)
 
 # Start updating the label
 root.after(500, update)  
