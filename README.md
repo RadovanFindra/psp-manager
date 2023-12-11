@@ -1,4 +1,4 @@
-# PSP-Manager
+# PSP Game Manager
 
 
 
@@ -15,14 +15,14 @@ Already a pro? Just edit this README.md and make it your own. Want to make it ea
 
 ```
 cd existing_repo
-git remote add origin https://osmijanko.fri.uniza.sk/findra/psp-manager.git
+git remote add origin https://osmijanko.fri.uniza.sk/findra/psp-game-manager.git
 git branch -M main
 git push -uf origin main
 ```
 
 ## Integrate with your tools
 
-- [ ] [Set up project integrations](https://osmijanko.fri.uniza.sk/findra/psp-manager/-/settings/integrations)
+- [ ] [Set up project integrations](https://osmijanko.fri.uniza.sk/findra/psp-game-manager/-/settings/integrations)
 
 ## Collaborate with your team
 
