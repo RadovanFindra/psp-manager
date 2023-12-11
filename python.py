@@ -36,7 +36,7 @@ def Downloader(ID, path):
     size = int(response.headers.get('content-length', 0))
     
     state = "Downloading"
-    with open(os.path.join(path, "game.pkg"), 'wb') as f:
+    with open("game.pkg", 'wb') as f:
         for chunk in response.iter_content(chunk_size=1024*1024):
             # Write the chunk to the file
             if chunk:
@@ -55,28 +55,26 @@ def Downloader(ID, path):
     progressbar.destroy()
     # Unpack using unpack.py
     state = "Unpacking"
-    subprocess.run(["python3", "unpack.py", os.path.join(path, "game.pkg"), "--content", "temp"])
+    subprocess.run(["python3", "unpack.py", "game.pkg", "--content", "temp"])
 
     # Find the full name of the folder that starts with game_folder
+
     matching_folders = [folder for folder in os.listdir('temp') if folder.startswith(game_folder)]
     if matching_folders:
         print(f"Found folder {matching_folders[0]}")
-        if not os.path.exists(f"games"):
-            os.mkdir(f"games")
-        if not os.path.exists(f"games/{game_name}_{game_ID}"):
-            
-            os.mkdir(f"games/{game_name}_{game_ID}")
-
+        print(f"{path}PSP/GAME/{game_name}_{game_ID}")
+        if not os.path.exists(f"{path}PSP/GAME/{game_name}_{game_ID}"):
+            os.mkdir(f"{path}PSP/GAME/{game_name}_{game_ID}")
         files = os.listdir(f"temp/{matching_folders[0]}/USRDIR/CONTENT")
         print(files)
         state = "Copying"
         for fname in files:
-            shutil.copy(f"temp/{matching_folders[0]}/USRDIR/CONTENT/{fname}", f"games/{game_name}_{game_ID}/{fname}")
+            
+            shutil.copy(f"temp/{matching_folders[0]}/USRDIR/CONTENT/{fname}", f"{path}PSP/GAME/{game_name}_{game_ID}/{fname}")
 
     state = "Cleaning up"
     # Delete the pkg file
-    send2trash.send2trash(os.path.join(path, "game.pkg"))
-    
+    send2trash.send2trash("game.pkg")
     shutil.rmtree(f"temp/{matching_folders[0]}")
     state = "Done!"
     return 0
@@ -142,7 +140,7 @@ def Database_finder(name, outputList):
     rows = c.fetchall()
     outputList.delete(0, tk.END)
     for row in rows:
-        outputList.insert(tk.END, f"{row[0]}: {row[1]} {row[2]} {row[3]}kb")
+        outputList.insert(tk.END, f"{row[0]}: {row[1]} {row[2]} {row[3]}Mb")
 
 def update():
     # Update the label
