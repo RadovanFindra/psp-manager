@@ -13,7 +13,7 @@ import send2trash
 state = "Waiting for input"
 percentage_D = 0
 
-def Downloader(ID):
+def Downloader(ID, path):
     conn = sqlite3.connect('games.sqlite')
     c = conn.cursor()
     print(ID)
@@ -34,9 +34,9 @@ def Downloader(ID):
     progressbar = ttk.Progressbar(orient=tk.HORIZONTAL, length=160)
     progressbar.grid(row=3, column=4, pady=10, padx=10)
     size = int(response.headers.get('content-length', 0))
-    state = "Downloading"
     
-    with open("game.pkg", 'wb') as f:
+    state = "Downloading"
+    with open(os.path.join(path, "game.pkg"), 'wb') as f:
         for chunk in response.iter_content(chunk_size=1024*1024):
             # Write the chunk to the file
             if chunk:
@@ -55,7 +55,7 @@ def Downloader(ID):
     progressbar.destroy()
     # Unpack using unpack.py
     state = "Unpacking"
-    subprocess.run(["python3", "unpack.py", "game.pkg", "--content", "temp"])
+    subprocess.run(["python3", "unpack.py", os.path.join(path, "game.pkg"), "--content", "temp"])
 
     # Find the full name of the folder that starts with game_folder
     matching_folders = [folder for folder in os.listdir('temp') if folder.startswith(game_folder)]
@@ -75,7 +75,7 @@ def Downloader(ID):
 
     state = "Cleaning up"
     # Delete the pkg file
-    send2trash.send2trash("game.pkg")
+    send2trash.send2trash(os.path.join(path, "game.pkg"))
     
     shutil.rmtree(f"temp/{matching_folders[0]}")
     state = "Done!"
@@ -153,6 +153,12 @@ def update():
 
 def select_folder():
     folder_selected = filedialog.askdirectory()
+    if folder_selected == "":
+        return "No folder selected"
+    if not os.path.isdir(folder_selected):
+        return "Invalid folder selected"
+    if "PSP" not in os.listdir(folder_selected):
+        return "Selected folder does not contain 'PSP' folder"
     return folder_selected
 
 
@@ -194,7 +200,7 @@ def setWindowProperties(window):
     find = tk.Button(window, text="Find", command=lambda: Database_finder(entrygame.get(), outputList))
     find.grid(row=3, column=2, columnspan=2, pady=10, padx=10)
 
-    dowload = tk.Button(window, text="Download", command=lambda: Downloader(outputList.get(tk.ACTIVE).split(" ")[0].replace(":","")))
+    dowload = tk.Button(window, text="Download", command=lambda: Downloader(outputList.get(tk.ACTIVE).split(" ")[0].replace(":",""), path))
     dowload.grid(row=4, column=2, columnspan=2, pady=10, padx=10)
 
     DropDatabase = tk.Button(window, text="Drop Database", command=lambda: drop_database())
