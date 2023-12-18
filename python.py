@@ -55,6 +55,7 @@ def Downloader(ID):
     state = "Unpacking"
     subprocess.run(["python3", "unpack.py", "game.pkg", "--content", "temp"])
 
+
     # Find the full name of the folder that starts with game_folder
     matching_folders = [folder for folder in os.listdir('temp') if folder.startswith(game_folder)]
     if matching_folders:
@@ -78,7 +79,14 @@ def Downloader(ID):
     shutil.rmtree(f"temp/{matching_folders[0]}")
     state = "Done!"
     return 0
-    
+
+def copy_files(game_id):
+    matching_folders = [folder for folder in os.listdir('temp') if folder.startswith(game_folder)]
+    if matching_folders:
+        print(f"Found folder {matching_folders[0]}")
+        
+
+
 def table_exists():
     conn = sqlite3.connect('games.sqlite')
     c = conn.cursor()
