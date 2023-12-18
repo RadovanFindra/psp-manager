@@ -166,10 +166,10 @@ def setWindowProperties(window):
     window.geometry("840x460+400+200")
     window.resizable(width=False, height=False)
     window.iconbitmap("psp.ico")
-    
-    pathText = tk.Text(window, height=1, width=50)
-    pathText.grid(row=0, column=0, columnspan=2, sticky="w", padx=10, pady=10)
+
     path = select_folder()
+    pathText = tk.Text(window, height=1, width=len(path))
+    pathText.grid(row=0, column=0, sticky="w", padx=10, pady=10)
     pathText.insert(tk.END, path)
     pathText.config(state="disabled")
 
@@ -177,7 +177,7 @@ def setWindowProperties(window):
     labelUrl.grid(row=1, column=0, sticky="w", padx=10, pady=10)
     
     outputList = tk.Listbox(window, width=0, height=20 )
-    outputList.grid(row=4, column=0, columnspan=2, padx=10)
+    outputList.grid(row=4, column=0, columnspan=2)
     outputList.bind("<Return>", lambda event: Downloader(outputList.get(tk.ACTIVE).split(" ")[0].replace(":","")))
 
     entryUrl = tk.Entry(window)
