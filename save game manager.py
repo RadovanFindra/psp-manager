@@ -1,6 +1,17 @@
+import requests
 import sqlite3
+import csv
+import subprocess
 import os
+import shutil
+import tkinter as tk
+from tkinter import ttk
+from tkinter import filedialog
+import re
+import send2trash
 
+def copy():
+    return 0
 def table_exists():
     conn = sqlite3.connect('games.sqlite')
     c = conn.cursor()
@@ -34,7 +45,8 @@ def build_databaze(folder_name):
         CREATE TABLE IF NOT EXISTS saves (
             ID INTEGER PRIMARY KEY,
             Game_ID TEXT,
-            Name TEXT
+            Name TEXT,
+            Folder_Name TEXT
         )
     ''')
 
@@ -50,11 +62,91 @@ def build_databaze(folder_name):
                 if len(rows) == 1:
                     Game_ID = rows[0][0]
                     Game_Name = rows[0][1]
-                    c.execute("INSERT INTO saves (Game_ID, Name) VALUES (?, ?)", (Game_ID, Game_Name))
+                    c.execute("INSERT INTO saves (Game_ID, Name, Folder_Name) VALUES (?, ?, ?)", (Game_ID, Game_Name, folder))
                     break
     print("Saving changes...")
     conn.commit()
     return 0
 
-drop_database()
-build_databaze("SAVEDATA")
+def select_folder():
+    folder_selected = filedialog.askdirectory()
+    if folder_selected == "":
+        return "No folder selected"
+    if not os.path.isdir(folder_selected):
+        return "Invalid folder selected"
+    if "PSP" not in os.listdir(folder_selected):
+        return "Selected folder does not contain 'PSP' folder"
+    return folder_selected
+
+def Database_finder(name, outputList):
+    conn = sqlite3.connect('games.sqlite')
+    
+    c = conn.cursor()
+    c.execute('SELECT ID, Name FROM saves WHERE Name like ?', (name+"%",))
+    rows = c.fetchall()
+    outputList.delete(0, tk.END)
+    for row in rows:
+        outputList.insert(tk.END, f"{row[0]}: {row[1]}")
+
+def setWindowProperties(window):
+   
+    window.title("PSP Save Game Manager")
+    window.geometry("840x460+400+200")
+    window.resizable(width=False, height=False)
+    window.iconbitmap("psp.ico")
+
+    path = ""#select_folder()
+    pathText = tk.Text(window, height=1, width=len(path))
+    pathText.grid(row=0, column=0, sticky="w", padx=10, pady=10)
+    pathText.insert(tk.END, path)
+    pathText.config(state="disabled")
+
+    labelUrl = tk.Label(window, text="Zadajte nazov zlozky: ")
+    labelUrl.grid(row=1, column=0, sticky="w", padx=10, pady=10)
+    
+    outputList = tk.Listbox(window, width=0, height=20 )
+    outputList.grid(row=4, column=0, columnspan=2)
+    outputList.bind("<Return>", lambda event: Downloader(outputList.get(tk.ACTIVE).split(" ")[0].replace(":","")))
+
+    entryUrl = tk.Entry(window)
+    entryUrl.grid(row=1, column=1, sticky="w", pady=10, ipadx=100)
+    entryUrl.insert(0, "SAVEDATA")
+
+    labelgame = tk.Label(window, text="Zadajte meno Hry: ")
+    labelgame.grid(row=3, column=0, sticky="w", padx=10, pady=10)
+
+    entrygame = tk.Entry(window)
+    entrygame.bind("<Return>", lambda event: Database_finder(entrygame.get(), outputList), outputList.focus_set() )
+    entrygame.grid(row=3, column=1, sticky="w", pady=10, ipadx=100)
+    #entrygame.insert(0, "God of War")
+    
+    button = tk.Button(window, text="Build Database", command=lambda: build_databaze(entryUrl.get()))
+    button.grid(row=1, column=2, columnspan=2, pady=10, padx=10)
+
+    find = tk.Button(window, text="Find Game", command=lambda: Database_finder(entrygame.get(), outputList))
+    find.grid(row=3, column=2, columnspan=2, pady=10, padx=10)
+
+
+    dowload = tk.Button(window, text="Copy This save", command=lambda: Copy(outputList.get(tk.ACTIVE).split(" ")[0].replace(":",""), path))
+    dowload.grid(row=4, column=2, columnspan=2, pady=10, padx=10)
+
+    DropDatabase = tk.Button(window, text="Drop Database", command=lambda: drop_database())
+    DropDatabase.grid(row=1, column=4, pady=10, padx=10)
+
+    return True
+
+
+root = tk.Tk()
+setWindowProperties(root)
+    
+# Create a StringVar
+labelState = tk.StringVar()
+labelState.set(f"Stav: {table_exists()}")
+
+# Associate the StringVar with the label
+label = tk.Label(root, textvariable=labelState)
+label.grid(row=1, column=5, sticky="w", padx=10, pady=10)
+
+# Start updating the label
+
+root.mainloop()
