@@ -79,14 +79,6 @@ def Downloader(ID, path):
     state = "Done!"
     return 0
 
-def copy_files(game_id, path):
-    matching_folders = [folder for folder in os.listdir('temp') if folder.startswith(game_folder)]
-    if matching_folders:
-        print(f"Found folder {matching_folders[0]}")
-        print(f"{path}PSP/GAME/{game_name}_{game_ID}")
-
-
-
 def table_exists():
     conn = sqlite3.connect('games.sqlite')
     c = conn.cursor()
@@ -126,7 +118,7 @@ def build_databaze(file_name):
         next(reader)  # Skip the header row
         for row in reader:
             c.execute('INSERT INTO games (Name, Type, Region, Link, Size, Game_ID) VALUES (?, ?, ?, ?, ?, ?)', 
-                      (row[0], row[1], row[2], row[3].replace("http://zeusXXXX", "http://zeus.dl.playstation.net/cdn/"), row[4], row[3].split('/')[3].replace("_","")))
+                      (row[0], row[1], row[2], row[3].replace("http://zeusXXXX", "http://zeus.dl.playstation.net/cdn/"), row[4], row[3].split('/')[3].replace("_00","")))
 
     # Save (commit) the changes
     print("Saving changes...")
@@ -203,8 +195,11 @@ def setWindowProperties(window):
     button = tk.Button(window, text="Build Database", command=lambda: build_databaze(entryUrl.get()))
     button.grid(row=1, column=2, columnspan=2, pady=10, padx=10)
 
-    find = tk.Button(window, text="Find", command=lambda: Database_finder(entrygame.get(), outputList))
+    find = tk.Button(window, text="Find Game", command=lambda: Database_finder(entrygame.get(), outputList))
     find.grid(row=3, column=2, columnspan=2, pady=10, padx=10)
+
+    save = tk.Button(window, text="Save Game's", command=lambda: subprocess.run(["python", "save game manager.py"]))
+    save.grid(row=3, column=4, pady=10, padx=10)
 
     dowload = tk.Button(window, text="Download", command=lambda: Downloader(outputList.get(tk.ACTIVE).split(" ")[0].replace(":",""), path))
     dowload.grid(row=4, column=2, columnspan=2, pady=10, padx=10)
