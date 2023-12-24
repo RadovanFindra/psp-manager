@@ -59,13 +59,12 @@ def Downloader(ID, path):
 
 
     # Find the full name of the folder that starts with game_folder
-
     matching_folders = [folder for folder in os.listdir('temp') if folder.startswith(game_folder)]
     if matching_folders:
         print(f"Found folder {matching_folders[0]}")
         print(f"{path}PSP/GAME/{game_name}_{game_ID}")
-        if not os.path.exists(f"{path}PSP/GAME/{game_name}_{game_ID}"):
-            os.mkdir(f"{path}PSP/GAME/{game_name}_{game_ID}")
+        if not os.path.exists(f"{path}/PSP/GAME/{game_name}_{game_ID}"):
+            os.mkdir(f"{path}/PSP/GAME/{game_name}_{game_ID}")
         files = os.listdir(f"temp/{matching_folders[0]}/USRDIR/CONTENT")
         print(files)
         state = "Copying"
@@ -80,11 +79,12 @@ def Downloader(ID, path):
     state = "Done!"
     return 0
 
-def copy_files(game_id):
+def copy_files(game_id, path):
     matching_folders = [folder for folder in os.listdir('temp') if folder.startswith(game_folder)]
     if matching_folders:
         print(f"Found folder {matching_folders[0]}")
-        
+        print(f"{path}PSP/GAME/{game_name}_{game_ID}")
+
 
 
 def table_exists():
