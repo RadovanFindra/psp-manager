@@ -62,15 +62,15 @@ def Downloader(ID, path):
     matching_folders = [folder for folder in os.listdir('temp') if folder.startswith(game_folder)]
     if matching_folders:
         print(f"Found folder {matching_folders[0]}")
-        print(f"{path}PSP/GAME/{game_name}_{game_ID}")
-        if not os.path.exists(f"{path}/PSP/GAME/{game_name}_{game_ID}"):
-            os.mkdir(f"{path}/PSP/GAME/{game_name}_{game_ID}")
+        print(f"{path}{game_name}_{game_ID}")
+        if not os.path.exists(f"{path}{game_name}_{game_ID}"):
+            os.mkdir(f"{path}{game_name}_{game_ID}")
         files = os.listdir(f"temp/{matching_folders[0]}/USRDIR/CONTENT")
         print(files)
         state = "Copying"
         for fname in files:
             
-            shutil.copy(f"temp/{matching_folders[0]}/USRDIR/CONTENT/{fname}", f"{path}PSP/GAME/{game_name}_{game_ID}/{fname}")
+            shutil.copy(f"temp/{matching_folders[0]}/USRDIR/CONTENT/{fname}", f"{path}{game_name}_{game_ID}/{fname}")
 
     state = "Cleaning up"
     # Delete the pkg file
@@ -167,7 +167,7 @@ def setWindowProperties(window):
     window.resizable(width=False, height=False)
     window.iconbitmap("psp.ico")
 
-    path = select_folder()
+    path = select_folder() + "PSP/GAME/"
     pathText = tk.Text(window, height=1, width=len(path))
     pathText.grid(row=0, column=0, sticky="w", padx=10, pady=10)
     pathText.insert(tk.END, path)

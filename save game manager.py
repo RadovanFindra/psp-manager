@@ -10,7 +10,11 @@ from tkinter import filedialog
 import re
 import send2trash
 
-def copy():
+def copy(ID, path):
+    conn = sqlite3.connect('games.sqlite')
+    c = conn.cursor()
+    print(ID)
+
     return 0
 def table_exists():
     conn = sqlite3.connect('games.sqlite')
@@ -95,7 +99,7 @@ def setWindowProperties(window):
     window.resizable(width=False, height=False)
     window.iconbitmap("psp.ico")
 
-    path = ""#select_folder()
+    path = ""#select_folder() + "PSP/SAVEDATA/"
     pathText = tk.Text(window, height=1, width=len(path))
     pathText.grid(row=0, column=0, sticky="w", padx=10, pady=10)
     pathText.insert(tk.END, path)
