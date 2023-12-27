@@ -10,12 +10,28 @@ from tkinter import filedialog
 import re
 import send2trash
 
-def copy(ID, path):
+def Copy(ID, path):
     conn = sqlite3.connect('games.sqlite')
     c = conn.cursor()
     print(ID)
-
+    print(path)
+    c.execute("SELECT Folder_Name FROM saves WHERE ID = ?", (ID,))
+    folder_name = c.fetchone()
+    print(folder_name)
+    if folder_name:
+        folder_name = folder_name[0]
+        source_folder = os.path.join('SAVEDATA', folder_name)
+       
+        if os.path.exists(source_folder):
+            print(source_folder)
+            shutil.copytree(source_folder, path + folder_name)
+            print("Copy completed.")
+        else:
+            print("Source folder does not exist.")
+    else:
+        print("Invalid ID.")
     return 0
+
 def table_exists():
     conn = sqlite3.connect('games.sqlite')
     c = conn.cursor()
@@ -99,7 +115,7 @@ def setWindowProperties(window):
     window.resizable(width=False, height=False)
     window.iconbitmap("psp.ico")
 
-    path = ""#select_folder() + "PSP/SAVEDATA/"
+    path = select_folder() + "PSP/SAVEDATA/"
     pathText = tk.Text(window, height=1, width=len(path))
     pathText.grid(row=0, column=0, sticky="w", padx=10, pady=10)
     pathText.insert(tk.END, path)
@@ -110,7 +126,7 @@ def setWindowProperties(window):
     
     outputList = tk.Listbox(window, width=0, height=20 )
     outputList.grid(row=4, column=0, columnspan=2)
-    outputList.bind("<Return>", lambda event: Downloader(outputList.get(tk.ACTIVE).split(" ")[0].replace(":","")))
+    outputList.bind("<Return>", lambda event: Copy(outputList.get(tk.ACTIVE).split(" ")[0].replace(":",""), path))
 
     entryUrl = tk.Entry(window)
     entryUrl.grid(row=1, column=1, sticky="w", pady=10, ipadx=100)
