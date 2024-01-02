@@ -198,7 +198,7 @@ def setWindowProperties(window):
     find = tk.Button(window, text="Find Game", command=lambda: Database_finder(entrygame.get(), outputList))
     find.grid(row=3, column=2, columnspan=2, pady=10, padx=10)
 
-    save = tk.Button(window, text="Save Game's", command=lambda: subprocess.run(["python", "save game manager.py"]))
+    save = tk.Button(window, text="Save Game's", command=lambda: subprocess.run(["python", "save game manager.py", "--path", path, "--game_ID", outputList.get(tk.ACTIVE).split(" ")[0].replace(":","") ]))
     save.grid(row=3, column=4, pady=10, padx=10)
 
     dowload = tk.Button(window, text="Download", command=lambda: Downloader(outputList.get(tk.ACTIVE).split(" ")[0].replace(":",""), path))

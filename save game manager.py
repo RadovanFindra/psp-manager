@@ -1,14 +1,10 @@
-import requests
 import sqlite3
-import csv
-import subprocess
 import os
 import shutil
+import argparse
 import tkinter as tk
-from tkinter import ttk
 from tkinter import filedialog
-import re
-import send2trash
+
 
 def Copy(ID, path):
     conn = sqlite3.connect('games.sqlite')
@@ -115,7 +111,7 @@ def setWindowProperties(window):
     window.resizable(width=False, height=False)
     window.iconbitmap("psp.ico")
 
-    path = select_folder() + "PSP/SAVEDATA/"
+    path = args.path
     pathText = tk.Text(window, height=1, width=len(path))
     pathText.grid(row=0, column=0, sticky="w", padx=10, pady=10)
     pathText.insert(tk.END, path)
@@ -155,7 +151,12 @@ def setWindowProperties(window):
 
     return True
 
-
+parser = argparse.ArgumentParser()
+parser.add_argument("--path", help="Path to PSP sd card")
+#args.path
+parser.add_argument("--game_ID", help="Game ID")
+#args.game_ID
+args = parser.parse_args()
 root = tk.Tk()
 setWindowProperties(root)
     
