@@ -10,10 +10,11 @@ from tkinter import filedialog
 import re
 import send2trash
 
-state = "Waiting for input"
+
 percentage_D = 0
 
 def Downloader(ID, path):
+    global state
     conn = sqlite3.connect('games.sqlite')
     c = conn.cursor()
     print(ID)
@@ -31,11 +32,10 @@ def Downloader(ID, path):
     
     written = 0
     written_Update = 0
-    progressbar = ttk.Progressbar(orient=tk.HORIZONTAL, length=140)
-    progressbar.grid(row=4, column=4, pady=10, padx=10)
+    progressbar = ttk.Progressbar(orient=tk.HORIZONTAL, length=120)
+    progressbar.grid(row=5, column=2)
     size = int(response.headers.get('content-length', 0))
-    
-    state = "Downloading"
+    state.set("Downloading")
     with open("game.pkg", 'wb') as f:
         for chunk in response.iter_content(chunk_size=1024*1024):
             # Write the chunk to the file
@@ -52,11 +52,13 @@ def Downloader(ID, path):
                 written_Update = 0
             
     print("\nDOWNLOAD COMPLETE! NOW INSTALLING...\n")
-    progressbar.destroy()
-    # Unpack using unpack.py
-    state = "Unpacking"
-    subprocess.run(["python3", "unpack.py", "game.pkg", "--content", "temp"])
 
+    progressbar.destroy()
+    progressbar.update()
+    # Unpack using unpack.py
+    state.set("Unpacking")
+    process = subprocess.Popen(["python3", "unpack.py", "game.pkg", "--content", "temp"])
+    
 
     # Find the full name of the folder that starts with game_folder
     matching_folders = [folder for folder in os.listdir('temp') if folder.startswith(game_folder)]
@@ -67,17 +69,18 @@ def Downloader(ID, path):
             os.mkdir(f"{path}{game_name}_{game_ID}")
         files = os.listdir(f"temp/{matching_folders[0]}/USRDIR/CONTENT")
         print(files)
-        state = "Copying"
+        state.set("Copying")
+        
         for fname in files:
             
             shutil.copy(f"temp/{matching_folders[0]}/USRDIR/CONTENT/{fname}", f"{path}{game_name}_{game_ID}/{fname}")
             
 
-    state = "Cleaning up"
+    state.set("Cleaning up")
     # Delete the pkg file
     send2trash.send2trash("game.pkg")
     shutil.rmtree(f"temp/{matching_folders[0]}")
-    state = "Done!"
+    state.set("Done!")
     return 0
 
 def table_exists():
@@ -144,11 +147,12 @@ def Database_finder(name, outputList):
         outputList.insert(tk.END, f"{row[0]}: {row[1]} {row[2]} {row[3]}Mb")
 
 def update():
-    # Update the label
+    global state  
     labelState.set(f"Database State: {table_exists()}")
+    Taskstr.set(f"Currently doing: {state.get()}")
 
     # Schedule the next update
-    root.after(1000, update)  # Update every 1000 ms
+    root.after(750, update)  # Update every 750 ms
 
 def select_folder():
     folder_selected = filedialog.askdirectory()
@@ -165,7 +169,7 @@ def setWindowProperties(window):
    
     window.title("PSP Games Downloader")
     window.geometry("840x460+400+200")
-    window.resizable(width=False, height=False)
+    window.resizable(width=True, height=True)
     window.iconbitmap("psp.ico")
 
     path = select_folder() + "PSP/GAME/"
@@ -178,7 +182,7 @@ def setWindowProperties(window):
     labelUrl.grid(row=1, column=0, sticky="w", padx=10, pady=10)
     
     outputList = tk.Listbox(window, width=0, height=20 )
-    outputList.grid(row=4, column=0, columnspan=2)
+    outputList.grid(row=4, column=0, columnspan=2, rowspan=20)
     outputList.bind("<Return>", lambda event: Downloader(outputList.get(tk.ACTIVE).split(" ")[0].replace(":","")))
 
     entryUrl = tk.Entry(window)
@@ -199,14 +203,16 @@ def setWindowProperties(window):
     find = tk.Button(window, text="Find Game", command=lambda: Database_finder(entrygame.get(), outputList))
     find.grid(row=3, column=2, columnspan=2, pady=10, padx=10)
 
-    save = tk.Button(window, text="Save Game's", command=lambda: subprocess.run(["python", "save game manager.py", "--path", path, "--game_ID", outputList.get(tk.ACTIVE).split(" ")[0].replace(":","") ]))
+    save = tk.Button(window, text="Save Game's", command=lambda: subprocess.Popen(["python", "save game manager.py", "--path", path, "--game_ID", outputList.get(tk.ACTIVE).split(" ")[0].replace(":","") ]))
     save.grid(row=3, column=4, pady=10, padx=10)
 
     dowload = tk.Button(window, text="Download", command=lambda: Downloader(outputList.get(tk.ACTIVE).split(" ")[0].replace(":",""), path))
     dowload.grid(row=4, column=2, columnspan=2, pady=10, padx=10)
 
+    
+
     DropDatabase = tk.Button(window, text="Drop Database", command=lambda: drop_database())
-    DropDatabase.grid(row=1, column=4, pady=10, padx=10)
+    DropDatabase.grid(row=1, column=4, columnspan=2, pady=10, padx=10)
 
     return True
 
@@ -218,13 +224,18 @@ setWindowProperties(root)
 # Create a StringVar
 labelState = tk.StringVar()
 labelState.set(f"Database State: {table_exists()}")
-
 # Associate the StringVar with the label
 label = tk.Label(root, textvariable=labelState)
 label.grid(row=0, column=1, sticky="w", padx=10, pady=10)
-
+global state
+state = tk.StringVar()
+state.set("Waiting for input")
+Taskstr = tk.StringVar()
+Taskstr.set(f"Currently doing: {state}")
+labelTask = tk.Label(root, textvariable=Taskstr)
+labelTask.grid(row=4, column=4, sticky="w", padx=10, pady=10)
 # Start updating the label
-root.after(500, update)  
+update()
 
 root.mainloop()
 
