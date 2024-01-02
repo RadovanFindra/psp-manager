@@ -20,7 +20,9 @@ def Copy(ID, path):
        
         if os.path.exists(source_folder):
             print(source_folder)
+            
             shutil.copytree(source_folder, path + folder_name)
+            
             print("Copy completed.")
         else:
             print("Source folder does not exist.")
@@ -111,7 +113,7 @@ def setWindowProperties(window):
     window.resizable(width=False, height=False)
     window.iconbitmap("psp.ico")
 
-    path = args.path
+    path = args.path.replace("GAME", "SAVEDATA")
     pathText = tk.Text(window, height=1, width=len(path))
     pathText.grid(row=0, column=0, sticky="w", padx=10, pady=10)
     pathText.insert(tk.END, path)

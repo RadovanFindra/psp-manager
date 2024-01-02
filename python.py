@@ -31,8 +31,8 @@ def Downloader(ID, path):
     
     written = 0
     written_Update = 0
-    progressbar = ttk.Progressbar(orient=tk.HORIZONTAL, length=160)
-    progressbar.grid(row=3, column=4, pady=10, padx=10)
+    progressbar = ttk.Progressbar(orient=tk.HORIZONTAL, length=140)
+    progressbar.grid(row=4, column=4, pady=10, padx=10)
     size = int(response.headers.get('content-length', 0))
     
     state = "Downloading"
@@ -71,6 +71,7 @@ def Downloader(ID, path):
         for fname in files:
             
             shutil.copy(f"temp/{matching_folders[0]}/USRDIR/CONTENT/{fname}", f"{path}{game_name}_{game_ID}/{fname}")
+            
 
     state = "Cleaning up"
     # Delete the pkg file
@@ -144,7 +145,7 @@ def Database_finder(name, outputList):
 
 def update():
     # Update the label
-    labelState.set(f"Stav: {table_exists()}")
+    labelState.set(f"Database State: {table_exists()}")
 
     # Schedule the next update
     root.after(1000, update)  # Update every 1000 ms
@@ -216,11 +217,11 @@ setWindowProperties(root)
     
 # Create a StringVar
 labelState = tk.StringVar()
-labelState.set(f"Stav: {table_exists()}")
+labelState.set(f"Database State: {table_exists()}")
 
 # Associate the StringVar with the label
 label = tk.Label(root, textvariable=labelState)
-label.grid(row=1, column=5, sticky="w", padx=10, pady=10)
+label.grid(row=0, column=1, sticky="w", padx=10, pady=10)
 
 # Start updating the label
 root.after(500, update)  
