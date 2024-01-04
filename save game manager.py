@@ -143,7 +143,9 @@ def setWindowProperties(window):
     entrygame = tk.Entry(window)
     entrygame.bind("<Return>", lambda event: Database_finder(entrygame.get(), outputList), outputList.focus_set() )
     entrygame.grid(row=3, column=1, sticky="w", pady=10, ipadx=100)
-    entrygame.insert(0, Database_lookup(args.game_ID, "games")[1])
+    if args.game_ID:
+        entrygame.insert(0, Database_lookup(args.game_ID, "games")[1])
+    Database_finder(entrygame.get(), outputList)
     
     button = tk.Button(window, text="Build Database", command=lambda: build_databaze(entryUrl.get()))
     button.grid(row=1, column=2, columnspan=2, pady=10, padx=10)
@@ -172,11 +174,11 @@ setWindowProperties(root)
     
 # Create a StringVar
 labelState = tk.StringVar()
-labelState.set(f"Stav: {table_exists()}")
+labelState.set(f"Database State: {table_exists()}")
 
 # Associate the StringVar with the label
 label = tk.Label(root, textvariable=labelState)
-label.grid(row=1, column=5, sticky="w", padx=10, pady=10)
+label.grid(row=0, column=1, sticky="w", padx=10, pady=10)
 
 # Start updating the label
 

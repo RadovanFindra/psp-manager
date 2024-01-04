@@ -10,30 +10,25 @@ from tkinter import filedialog
 import re
 import send2trash
 
-
 percentage_D = 0
-
-def Downloader(ID, path):
+def Downloader(ID):
     global state
     conn = sqlite3.connect('games.sqlite')
     c = conn.cursor()
-    print(ID)
+   
     download_url = c.execute('SELECT Link FROM games WHERE ID=?', (ID,)).fetchone()[0]
     game_name = c.execute('SELECT Name FROM games WHERE ID=?', (ID,)).fetchone()[0]
     game_name = re.sub(r'[<>:"/\\|?*]', '', game_name)
-    game_ID = c.execute('SELECT Game_ID FROM games WHERE ID=?', (ID,)).fetchone()[0]
-    game_folder = download_url.split("/")[-2]
+  
     download_url = download_url.split("\n")[0]
 
     response = requests.get(download_url, stream=True)
-
     if response.status_code != 200:
         return f"Error: HTTP status code {response.status_code}"
-    
     written = 0
     written_Update = 0
     progressbar = ttk.Progressbar(orient=tk.HORIZONTAL, length=120)
-    progressbar.grid(row=5, column=2)
+    progressbar.grid(row=5, column=2, columnspan=2)
     size = int(response.headers.get('content-length', 0))
     state.set("Downloading")
     with open("game.pkg", 'wb') as f:
@@ -51,15 +46,17 @@ def Downloader(ID, path):
                 progressbar.update()
                 written_Update = 0
             
-    print("\nDOWNLOAD COMPLETE! NOW INSTALLING...\n")
-
+    print("\nDOWNLOAD COMPLETE!\n")
     progressbar.destroy()
     progressbar.update()
+
+def Unpack(file):
     # Unpack using unpack.py
     state.set("Unpacking")
-    process = subprocess.run(["python3", "unpack.py", "game.pkg", "--content", "temp"])
+    subprocess.run(["python3", "unpack.py", file, "--content", "temp"])
     
-
+def Copy(game_folder, path, game_name):
+    game_ID = game_folder.split("_")[0]
     # Find the full name of the folder that starts with game_folder
     matching_folders = [folder for folder in os.listdir('temp') if folder.startswith(game_folder)]
     if matching_folders:
@@ -74,12 +71,12 @@ def Downloader(ID, path):
         for fname in files:
             
             shutil.copy(f"temp/{matching_folders[0]}/USRDIR/CONTENT/{fname}", f"{path}{game_name}_{game_ID}/{fname}")
-            
 
+def Cleanup():
     state.set("Cleaning up")
     # Delete the pkg file
     send2trash.send2trash("game.pkg")
-    shutil.rmtree(f"temp/{matching_folders[0]}")
+    shutil.rmtree("temp")
     state.set("Done!")
     return 0
 
@@ -164,6 +161,9 @@ def select_folder():
         return "Selected folder does not contain 'PSP' folder"
     return folder_selected
 
+def Update_Firmware(name):
+    name = name + ".PBP"
+    print(name)
 
 def setWindowProperties(window):
    
@@ -197,8 +197,8 @@ def setWindowProperties(window):
     entrygame.grid(row=3, column=1, sticky="w", pady=10, ipadx=100)
     #entrygame.insert(0, "God of War")
     
-    button = tk.Button(window, text="Build Database", command=lambda: build_databaze(entryUrl.get()))
-    button.grid(row=1, column=2, columnspan=2, pady=10, padx=10)
+    buildDatabaze = tk.Button(window, text="Build Database", command=lambda: build_databaze(entryUrl.get()))
+    buildDatabaze.grid(row=1, column=2, columnspan=2, pady=10, padx=10)
 
     find = tk.Button(window, text="Find Game", command=lambda: Database_finder(entrygame.get(), outputList))
     find.grid(row=3, column=2, columnspan=2, pady=10, padx=10)
@@ -208,12 +208,21 @@ def setWindowProperties(window):
     
     dowload = tk.Button(window, text="Download", command=lambda: Downloader(outputList.get(tk.ACTIVE).split(" ")[0].replace(":",""), path))
     dowload.grid(row=4, column=2, columnspan=2, pady=10, padx=10)
-
     
-
     DropDatabase = tk.Button(window, text="Drop Database", command=lambda: drop_database())
     DropDatabase.grid(row=1, column=4, columnspan=2, pady=10, padx=10)
 
+    Upgrade = tk.Button(window, text="Upgrade Firmware", command=lambda: Update_Firmware(selected_firmware.get()))
+    Upgrade.grid(row=6, column=3, pady=10, padx=10)
+    
+    # Create a dropdown menu
+    firmware_options = ["6.60", "6.61"]
+    selected_firmware = tk.StringVar()
+    selected_firmware.set(firmware_options[0])  # Set the default firmware
+
+    firmware_menu = tk.OptionMenu(window, selected_firmware, *firmware_options)
+    firmware_menu.grid(row=6, column=4, sticky="w", padx=10, pady=10)
+   
     return True
 
 
