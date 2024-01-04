@@ -31,7 +31,7 @@ re - to check file names of illegal characters\
 send2trash - to remove temp files \
 tkinter - to make UI\
 subprocess - to launch scripts\
-os - to comunicate with PC's file system
+os - to comunicate with PC's file system\
 argparse - to add arguments to script
 
 ### Instalation of depencecies
