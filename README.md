@@ -13,7 +13,7 @@ savedata you have to build yourself like  this: move save folders in "SAVADATA"
 
 
 ## Description
-this in simple term is fancy downloader that have database of games and it's location. You can use greates UI man ever made to build your database, look up games and download them. Also this tool comes with great way to manage your save files. Just copy comtents of your "SAVEDATA" to "SAVEDATA" folder and refresh database. Now all your files are backed up in you PC and you can copy then by finding your save and clicking on Copy button.
+this in simple term is fancy downloader that have database of games and it's location. You can use greates UI man ever made to build your database, look up games and download them. Also this tool comes with great way to manage your save files. Just copy contents of your "SAVEDATA" to "SAVEDATA" folder and refresh database. Now all your files are backed up in you PC and you can copy then by finding your save and clicking on Copy button.
 
 
 ## Visuals
