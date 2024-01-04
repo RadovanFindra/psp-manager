@@ -32,7 +32,8 @@ send2trash - to remove temp files \
 tkinter - to make UI\
 subprocess - to launch scripts\
 os - to comunicate with PC's file system\
-argparse - to add arguments to script
+argparse - to add arguments to script\
+threading - to prevent program from freezing when coping 
 
 ### Instalation of depencecies
 use this and replace "library-name" with name of library

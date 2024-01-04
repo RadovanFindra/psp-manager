@@ -9,9 +9,10 @@ from tkinter import ttk
 from tkinter import filedialog
 import re
 import send2trash
+import threading
 
 percentage_D = 0
-def Downloader(ID):
+def Downloader(ID, path):
     global state
     conn = sqlite3.connect('games.sqlite')
     c = conn.cursor()
@@ -19,6 +20,7 @@ def Downloader(ID):
     download_url = c.execute('SELECT Link FROM games WHERE ID=?', (ID,)).fetchone()[0]
     game_name = c.execute('SELECT Name FROM games WHERE ID=?', (ID,)).fetchone()[0]
     game_name = re.sub(r'[<>:"/\\|?*]', '', game_name)
+    game_ID = c.execute('SELECT Game_ID FROM games WHERE ID=?', (ID,)).fetchone()[0]
   
     download_url = download_url.split("\n")[0]
 
@@ -49,28 +51,30 @@ def Downloader(ID):
     print("\nDOWNLOAD COMPLETE!\n")
     progressbar.destroy()
     progressbar.update()
-
+    Unpack("game.pkg")
+    Copy(game_ID, path, game_name)
+    
 def Unpack(file):
     # Unpack using unpack.py
     state.set("Unpacking")
     subprocess.run(["python3", "unpack.py", file, "--content", "temp"])
     
-def Copy(game_folder, path, game_name):
-    game_ID = game_folder.split("_")[0]
+def Copy(game_ID, path, game_name):
     # Find the full name of the folder that starts with game_folder
-    matching_folders = [folder for folder in os.listdir('temp') if folder.startswith(game_folder)]
+    matching_folders = [folder for folder in os.listdir('temp') if folder.startswith(game_ID)]
     if matching_folders:
         print(f"Found folder {matching_folders[0]}")
         print(f"{path}{game_name}_{game_ID}")
         if not os.path.exists(f"{path}{game_name}_{game_ID}"):
             os.mkdir(f"{path}{game_name}_{game_ID}")
         files = os.listdir(f"temp/{matching_folders[0]}/USRDIR/CONTENT")
-        print(files)
+
         state.set("Copying")
-        
         for fname in files:
-            
-            shutil.copy(f"temp/{matching_folders[0]}/USRDIR/CONTENT/{fname}", f"{path}{game_name}_{game_ID}/{fname}")
+            copy_thread = threading.Thread(target= shutil.copy, args=(f"temp/{matching_folders[0]}/USRDIR/CONTENT/{fname}", f"{path}{game_name}_{game_ID}/{fname}"))
+            copy_thread.start()
+            copy_thread.join()
+            Cleanup()
 
 def Cleanup():
     state.set("Cleaning up")
@@ -161,9 +165,14 @@ def select_folder():
         return "Selected folder does not contain 'PSP' folder"
     return folder_selected
 
-def Update_Firmware(name):
-    name = name + ".PBP"
-    print(name)
+def Update_Firmware(name, path):
+    name = "Firmware/" + name + ".PBP"
+    if not os.path.exists(path + "UPDATE/"):
+        os.mkdir(path + "UPDATE/")
+    copy_thread = threading.Thread(target=shutil.copy, args=(name, path + "UPDATE/EBOOT.PBP"))
+    copy_thread.start()
+    
+    
 
 def setWindowProperties(window):
    
@@ -212,7 +221,7 @@ def setWindowProperties(window):
     DropDatabase = tk.Button(window, text="Drop Database", command=lambda: drop_database())
     DropDatabase.grid(row=1, column=4, columnspan=2, pady=10, padx=10)
 
-    Upgrade = tk.Button(window, text="Upgrade Firmware", command=lambda: Update_Firmware(selected_firmware.get()))
+    Upgrade = tk.Button(window, text="Upgrade Firmware", command=lambda: Update_Firmware(selected_firmware.get(), path))
     Upgrade.grid(row=6, column=3, pady=10, padx=10)
     
     # Create a dropdown menu
