@@ -47,7 +47,6 @@ def drop_database():
     conn.commit()
     return 0
 
-
 def build_databaze(folder_name):
 
     # Connect to the SQLite database
@@ -97,6 +96,7 @@ def select_folder():
     return folder_selected
 
 def Database_finder(name, outputList):
+
     conn = sqlite3.connect('games.sqlite')
     
     c = conn.cursor()
@@ -106,6 +106,13 @@ def Database_finder(name, outputList):
     for row in rows:
         outputList.insert(tk.END, f"{row[0]}: {row[1]}")
 
+def Database_lookup(ID, table):
+    conn = sqlite3.connect('games.sqlite')
+    c = conn.cursor()
+    c.execute(f"SELECT * FROM {table} WHERE ID = ?", (ID,))
+    row = c.fetchone()
+    print(row)
+    return row
 def setWindowProperties(window):
    
     window.title("PSP Save Game Manager")
@@ -136,7 +143,7 @@ def setWindowProperties(window):
     entrygame = tk.Entry(window)
     entrygame.bind("<Return>", lambda event: Database_finder(entrygame.get(), outputList), outputList.focus_set() )
     entrygame.grid(row=3, column=1, sticky="w", pady=10, ipadx=100)
-    #entrygame.insert(0, "God of War")
+    entrygame.insert(0, Database_lookup(args.game_ID, "games")[1])
     
     button = tk.Button(window, text="Build Database", command=lambda: build_databaze(entryUrl.get()))
     button.grid(row=1, column=2, columnspan=2, pady=10, padx=10)
@@ -158,6 +165,7 @@ parser.add_argument("--path", help="Path to PSP sd card")
 #args.path
 parser.add_argument("--game_ID", help="Game ID")
 #args.game_ID
+
 args = parser.parse_args()
 root = tk.Tk()
 setWindowProperties(root)

@@ -57,7 +57,7 @@ def Downloader(ID, path):
     progressbar.update()
     # Unpack using unpack.py
     state.set("Unpacking")
-    process = subprocess.Popen(["python3", "unpack.py", "game.pkg", "--content", "temp"])
+    process = subprocess.run(["python3", "unpack.py", "game.pkg", "--content", "temp"])
     
 
     # Find the full name of the folder that starts with game_folder
@@ -205,7 +205,7 @@ def setWindowProperties(window):
 
     save = tk.Button(window, text="Save Game's", command=lambda: subprocess.Popen(["python", "save game manager.py", "--path", path, "--game_ID", outputList.get(tk.ACTIVE).split(" ")[0].replace(":","") ]))
     save.grid(row=3, column=4, pady=10, padx=10)
-
+    
     dowload = tk.Button(window, text="Download", command=lambda: Downloader(outputList.get(tk.ACTIVE).split(" ")[0].replace(":",""), path))
     dowload.grid(row=4, column=2, columnspan=2, pady=10, padx=10)
 
