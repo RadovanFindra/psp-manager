@@ -62,6 +62,11 @@ python3 psp-manager.py
 8. Select savegame and hit copy and your save game is also on your SD card ready to load 
 9. That's all if you want to download more just download. 
 
+## Sources & Inspiration
+This idea come to my heat when i saw HomeBrew App called Free Stor \
+https://github.com/GorGylka/FREESTOR?tab=readme-ov-file \
+Unpacker (Unpack.py originaly PSN_get_pkg_info.py) is part of app called \ 
+https://github.com/windsurfer1122/PSN_get_pkg_info 
 
 ## Project status
 This project is in Development This is first usable version. If you need something make an issue or pull request
