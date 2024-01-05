@@ -55,7 +55,7 @@ def Downloader(ID, path):
     unpack_thread.start()
     def check_thread(thread):
         if thread.is_alive():
-            root.after(100, check_thread, thread)
+            root.after(1000, check_thread, thread)
         else:
             Copy(game_ID, path, game_name)
     check_thread(unpack_thread)
@@ -80,7 +80,7 @@ def Copy(game_ID, path, game_name):
             copy_thread.start()
         def check_thread(thread):
             if thread.is_alive():
-                root.after(100, check_thread, thread)
+                root.after(1000, check_thread, thread)
             else:
                 state.set("Done")
     check_thread(copy_thread)

@@ -4,30 +4,28 @@ import shutil
 import argparse
 import tkinter as tk
 from tkinter import filedialog
+import threading
 
 
 def Copy(ID, path):
     conn = sqlite3.connect('games.sqlite')
     c = conn.cursor()
-    print(ID)
-    print(path)
     c.execute("SELECT Folder_Name FROM saves WHERE ID = ?", (ID,))
     folder_name = c.fetchone()
-    print(folder_name)
     if folder_name:
         folder_name = folder_name[0]
         source_folder = os.path.join('SAVEDATA', folder_name)
-       
+        print(source_folder)
         if os.path.exists(source_folder):
-            print(source_folder)
+            copy_thread = threading.Thread(target= shutil.copytree, args=(source_folder, path + folder_name))
+            copy_thread.start()
+            def check_thread(thread):
+                if thread.is_alive():
+                    root.after(1000, check_thread, thread)
+                else:
+                    state.set("Done")
+    check_thread(copy_thread)
             
-            shutil.copytree(source_folder, path + folder_name)
-            
-            print("Copy completed.")
-        else:
-            print("Source folder does not exist.")
-    else:
-        print("Invalid ID.")
     return 0
 
 def table_exists():
@@ -113,6 +111,7 @@ def Database_lookup(ID, table):
     row = c.fetchone()
     print(row)
     return row
+
 def setWindowProperties(window):
    
     window.title("PSP Save Game Manager")
@@ -121,6 +120,7 @@ def setWindowProperties(window):
     window.iconbitmap("psp.ico")
 
     path = args.path.replace("GAME", "SAVEDATA")
+    print(path)
     pathText = tk.Text(window, height=1, width=len(path))
     pathText.grid(row=0, column=0, sticky="w", padx=10, pady=10)
     pathText.insert(tk.END, path)
@@ -130,7 +130,7 @@ def setWindowProperties(window):
     labelUrl.grid(row=1, column=0, sticky="w", padx=10, pady=10)
     
     outputList = tk.Listbox(window, width=0, height=20 )
-    outputList.grid(row=4, column=0, columnspan=2)
+    outputList.grid(row=4, column=0, columnspan=2, rowspan=20)
     outputList.bind("<Return>", lambda event: Copy(outputList.get(tk.ACTIVE).split(" ")[0].replace(":",""), path))
 
     entryUrl = tk.Entry(window)
@@ -162,13 +162,20 @@ def setWindowProperties(window):
 
     return True
 
+def update():
+    global state  
+    Taskstr.set(f"Currently doing: {state.get()}")
+
+    # Schedule the next update
+    root.after(750, update)  # Update every 750 ms
+
 parser = argparse.ArgumentParser()
 parser.add_argument("--path", help="Path to PSP sd card")
 #args.path
 parser.add_argument("--game_ID", help="Game ID")
 #args.game_ID
-
 args = parser.parse_args()
+global root
 root = tk.Tk()
 setWindowProperties(root)
     
@@ -180,6 +187,12 @@ labelState.set(f"Database State: {table_exists()}")
 label = tk.Label(root, textvariable=labelState)
 label.grid(row=0, column=1, sticky="w", padx=10, pady=10)
 
-# Start updating the label
-
+global state
+state = tk.StringVar()
+state.set("Waiting for input")
+Taskstr = tk.StringVar()
+Taskstr.set(f"Currently doing: {state}")
+labelTask = tk.Label(root, textvariable=Taskstr)
+labelTask.grid(row=4, column=4, sticky="w", padx=10, pady=10)
+update()
 root.mainloop()
