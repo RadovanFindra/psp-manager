@@ -65,7 +65,7 @@ python3 psp-manager.py
 ## Sources & Inspiration
 This idea come to my heat when i saw HomeBrew App called Free Stor \
 https://github.com/GorGylka/FREESTOR?tab=readme-ov-file \
-Unpacker (Unpack.py originaly PSN_get_pkg_info.py) is part of app called PSN_get_pkg_info
+Unpacker (Unpack.py originaly PSN_get_pkg_info.py) is part of app called PSN_get_pkg_info \
 https://github.com/windsurfer1122/PSN_get_pkg_info 
 
 ## Project status
