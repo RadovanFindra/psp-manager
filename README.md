@@ -35,6 +35,14 @@ os - to communicate with PC's file system\
 argparse - to add arguments to script\
 threading - to prevent program from freezing when copying
 
+###  You also need depencencies for Uncpack.py 
+
+pycryptodomex \
+cryptography \
+aenum \
+fastxor \
+packaging \
+ecdsa 
 ### Instalation of dependecies
 use this and replace "library-name" with name of library
 ```
