@@ -11,9 +11,10 @@ import re
 import send2trash
 import threading
 
-percentage_D = 0
+
 def Downloader(ID, path):
-    global state
+
+    percentage_D = 0
     conn = sqlite3.connect('games.sqlite')
     c = conn.cursor()
    
@@ -44,44 +45,54 @@ def Downloader(ID, path):
               if written >= 10 * 1024 * 1024:
                 percentage_D = 100 * written / size
                 progressbar['value'] = percentage_D
-                print(f"Downloaded {written} of {size} bytes ({percentage_D:.2f}%)")
                 progressbar.update()
                 written_Update = 0
             
     print("\nDOWNLOAD COMPLETE!\n")
     progressbar.destroy()
     progressbar.update()
-    Unpack("game.pkg")
-    Copy(game_ID, path, game_name)
-    
+    unpack_thread = threading.Thread(target=Unpack, args=("game.pkg",))
+    unpack_thread.start()
+    def check_thread(thread):
+        if thread.is_alive():
+            root.after(100, check_thread, thread)
+        else:
+            Copy(game_ID, path, game_name)
+    check_thread(unpack_thread)
+        
 def Unpack(file):
+    global state
     # Unpack using unpack.py
     state.set("Unpacking")
     subprocess.run(["python3", "unpack.py", file, "--content", "temp"])
     
 def Copy(game_ID, path, game_name):
+    global state
     # Find the full name of the folder that starts with game_folder
     matching_folders = [folder for folder in os.listdir('temp') if folder.startswith(game_ID)]
     if matching_folders:
-        print(f"Found folder {matching_folders[0]}")
-        print(f"{path}{game_name}_{game_ID}")
         if not os.path.exists(f"{path}{game_name}_{game_ID}"):
             os.mkdir(f"{path}{game_name}_{game_ID}")
         files = os.listdir(f"temp/{matching_folders[0]}/USRDIR/CONTENT")
-
         state.set("Copying")
         for fname in files:
             copy_thread = threading.Thread(target= shutil.copy, args=(f"temp/{matching_folders[0]}/USRDIR/CONTENT/{fname}", f"{path}{game_name}_{game_ID}/{fname}"))
             copy_thread.start()
-            copy_thread.join()
-            Cleanup()
-
+        def check_thread(thread):
+            if thread.is_alive():
+                root.after(100, check_thread, thread)
+            else:
+                state.set("Done")
+    check_thread(copy_thread)
+        
 def Cleanup():
     state.set("Cleaning up")
     # Delete the pkg file
-    send2trash.send2trash("game.pkg")
-    shutil.rmtree("temp")
-    state.set("Done!")
+    if os.path.exists("game.pkg"):
+        send2trash.send2trash("game.pkg")
+    if os.path.exists("temp"):
+        shutil.rmtree("temp")
+    root.destroy()
     return 0
 
 def table_exists():
@@ -166,14 +177,12 @@ def select_folder():
     return folder_selected
 
 def Update_Firmware(name, path):
-    name = "Firmware/" + name + ".PBP"
+    name = "important_files/firmware/" + name + ".PBP"
     if not os.path.exists(path + "UPDATE/"):
         os.mkdir(path + "UPDATE/")
     copy_thread = threading.Thread(target=shutil.copy, args=(name, path + "UPDATE/EBOOT.PBP"))
     copy_thread.start()
     
-    
-
 def setWindowProperties(window):
    
     window.title("PSP Games Downloader")
@@ -235,7 +244,7 @@ def setWindowProperties(window):
     return True
 
 
-
+global root
 root = tk.Tk()
 setWindowProperties(root)
     
@@ -254,7 +263,7 @@ labelTask = tk.Label(root, textvariable=Taskstr)
 labelTask.grid(row=4, column=4, sticky="w", padx=10, pady=10)
 # Start updating the label
 update()
-
+root.protocol("WM_DELETE_WINDOW", Cleanup)
 root.mainloop()
 
 
