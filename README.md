@@ -23,6 +23,7 @@ UI is simple Tkinter. it is not perfect but it will get job done.
 Just download this repozitory and install dependecies and you ready to rock and play games faster then ever before. 
 
 ### Dependecies
+
 requests - to make request for downloading file \
 sqlite3 - to build and use databaze \
 csv - to read .csv files\
@@ -36,7 +37,7 @@ argparse - to add arguments to script\
 threading - to prevent program from freezing when copying
 
 ###  You also need depencencies for Uncpack.py 
-
+C++ 14+\
 pycryptodomex \
 cryptography \
 aenum \
