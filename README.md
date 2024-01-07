@@ -63,13 +63,13 @@ python3 psp-manager.py
 1. Select PSP SD card
 2. Check state of Databese
 3. If necesery build it 
-4. type name or starting part of game name that you want to download and hit enter or just hit enter to see all games in databese
-5.Click on game you want 
-5. Hit Download and wait until text next to it says Currently doing: Done!
-6. Now your game is on SD card ready to play and if you want you can click on Save Game's button to lauch Save games manager
-7. as you can see your Game selected in Downloader is typet in find fild. just hit Find Game and you will see every save game that is for this game. 
-8. Select savegame and hit copy and your save game is also on your SD card ready to load 
-9. That's all if you want to download more just download. 
+4. type name or starting part of game name that you want to download and hit    enter or just hit enter to see all games in databese
+5. Click on game you want 
+6. Hit Download and wait until text next to it says Currently doing: Done!
+7. Now your game is on SD card ready to play and if you want you can click on Save Game's button to lauch Save games manager
+8. as you can see your Game selected in Downloader is typet in find fild. just hit Find Game and you will see every save game that is for this game. 
+9. Select savegame and hit copy and your save game is also on your SD card ready to load 
+10. That's all if you want to download more just download. 
 
 ## Sources & Inspiration
 This idea come to my heat when i saw HomeBrew App called Free Stor \
