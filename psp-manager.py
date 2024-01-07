@@ -64,7 +64,7 @@ def Unpack(file):
     global state
     # Unpack using unpack.py
     state.set("Unpacking")
-    subprocess.run(["python3", "unpack.py", file, "--content", "temp"])
+    subprocess.run(["python", "unpack.py", file, "--content", "temp"])
     
 def Copy(game_ID, path, game_name):
     global state
@@ -173,7 +173,7 @@ def select_folder():
     if not os.path.isdir(folder_selected):
         return "Invalid folder selected"
     if "PSP" not in os.listdir(folder_selected):
-        return "Selected folder does not contain 'PSP' folder"
+        return 0
     return folder_selected
 
 def Update_Firmware(name, path):
@@ -190,7 +190,11 @@ def setWindowProperties(window):
     window.resizable(width=True, height=True)
     window.iconbitmap("psp.ico")
 
-    path = select_folder() + "PSP/GAME/"
+    path = select_folder() 
+    if (path != 0):
+        path += "PSP/GAME/"
+    else:
+        path = "No folder selected"
     pathText = tk.Text(window, height=1, width=len(path))
     pathText.grid(row=0, column=0, sticky="w", padx=10, pady=10)
     pathText.insert(tk.END, path)
