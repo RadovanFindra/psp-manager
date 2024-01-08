@@ -6,6 +6,7 @@ PSP Game Manager is a project that can be used for download and manage PSP games
 PSP turns 20 years old this year so decided to make this simple tool for less pain to manage games, savedata (and much more in next updates).
 Tools like this can be found on Homebrew but problem is that they rely on PSP internal Wi-fi capabilities that is bit out of date.
 When you want to use Wi-fi you need special access point for it that support older standard that is less secure and much slower, we talking speeds about 500Kbps This means that you need around 1-2 hours to download 1-1.5 Gb of data. 
+Also many people either replaced they UMD drive or simply don't have funcianal one. So playing games from SD card needed.
 
 This is where this tool comes to help. 
 In future updates you can use your own database of games. For now use Zeus list. 
@@ -81,4 +82,6 @@ Also Thanks to https://www.reddit.com/r/PSP/ for information about PSP file syst
 And PSP Homebrew Communnity Discord server 
 
 ## Project status
+Project is for educational porpuse only!
+Use it only for you PSP games you own. 
 This project is in Development This is first usable version. If you need something make an issue or pull request
