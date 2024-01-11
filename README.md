@@ -84,4 +84,4 @@ And PSP Homebrew Communnity Discord server
 ## Project status
 Project is for educational porpuse only!
 Use it only for you PSP games you own. 
-This project is in Development This is first usable version. If you need something make an issue or pull request
+This project is in Development and will be updated in future.
