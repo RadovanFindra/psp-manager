@@ -37,7 +37,7 @@ os - to communicate with PC's file system\
 argparse - to add arguments to script\
 threading - to prevent program from freezing when copying
 
-###  You also need depencencies for Uncpack.py 
+###  You also need depencencies for Uncpack.py  
 C++ 14+\
 pycryptodomex \
 cryptography \
