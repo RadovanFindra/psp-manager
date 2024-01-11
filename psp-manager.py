@@ -195,7 +195,6 @@ def setWindowProperties(window):
         path += "PSP/GAME/"
     else:
         path = "No folder selected"
-        
     pathText = tk.Text(window, height=1, width=len(path))
     pathText.grid(row=0, column=0, sticky="w", padx=10, pady=10)
     pathText.insert(tk.END, path)
