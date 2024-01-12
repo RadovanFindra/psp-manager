@@ -21,7 +21,10 @@ this in simple term is fancy downloader that have database of games and it's loc
 UI is simple Tkinter. it is not perfect but it will get job done.
 
 ## Installation
-Just download this repozitory and install dependecies and you ready to rock and play games faster then ever before. 
+https://github.com/RadovanFindra/psp-manager/releases \
+Download latest release and extract it and run psp-manager.exe \
+If you want to run it from source you need to install dependencies and run psp-manager.py
+
 
 ### Dependecies
 

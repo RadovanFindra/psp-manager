@@ -256,4 +256,5 @@ games/
 importante_files/
 temp/
 *.pkg
+*.exe
 SAVEDATA/
